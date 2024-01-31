@@ -12,10 +12,15 @@ Workstation* Workstation::getInstance() {
     return instance;
 }
 
-void Workstation::CreateNewProject(StringView path, StringView projectName) {
-    Project project(path,projectName);
+void Workstation::SetProjectName(StringView name) {
+    projectName = name;
+}
+
+void Workstation::SetProjectPath(StringView path) {
+    projectPath = path;
+}
+
+void Workstation::CreateNewProject() {
+    Project project(projectPath,projectName);
 } 
 
-void Workstation::MainMenu() {
-
-}

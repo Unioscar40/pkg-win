@@ -3,7 +3,7 @@
 #include <fstream>
 
 void Builder::CreateCmakeFile() {
-    std::ofstream cmakeFile(path/"CMakeLists.txt");
+    std::filesystem::copy(std::filesystem::current_path()/"files/genericCmakeFile.txt",path/"CMakeLists.txt");
 }
 
 void Builder::CreateDirectoryStructure() {
@@ -11,14 +11,14 @@ void Builder::CreateDirectoryStructure() {
     FilesystemPath srcPath = path/"src";
     FilesystemPath includePath = path/"include";
 
-    std::filesystem::copy(std::filesystem::current_path()/"files/genericMain.txt", srcPath/"main.cpp");
 
     std::cout << "Creando directorios..." << std::endl;
-    std::cout << std::filesystem::current_path() << std::endl;
 
     std::filesystem::create_directories(path);
     std::filesystem::create_directories(srcPath);
     std::filesystem::create_directories(includePath);
+
+    std::filesystem::copy(std::filesystem::current_path()/"files/genericMain.txt", srcPath/"main.cpp"); 
 }
 
 void Builder::CreateConanFile() {
