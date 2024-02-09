@@ -6,33 +6,30 @@
 void Builder::CreateCmakeFile() {
     std::string projectName(this->projectName);
     std::regex pattern("\\{name\\}");
-    std::filesystem::path filePath = std::filesystem::current_path()/"files/genericCmakeFile.txt";
-    std::filesystem::path tempFilePath = std::filesystem::temp_directory_path() / "temp_file.txt";
+    FilesystemPath filePath = std::filesystem::current_path() / "files" / "genericCmakeFile.txt";
 
     std::ifstream inputFile(filePath);
     if (!inputFile.is_open()) {
         std::cerr << "Unable to open file: " << filePath << std::endl;
         return;
     }
-
-    std::string content((std::istreambuf_iterator<char>(inputFile)), std::istreambuf_iterator<char>());
+    
+    std::string fileContent((std::istreambuf_iterator<char>(inputFile)), std::istreambuf_iterator<char>());
     inputFile.close();
+    // Replace all "pattern" matches in fileContent with projectName
+    fileContent = std::regex_replace(fileContent, pattern, projectName);
 
-    std::ofstream outputFile(tempFilePath);
+    FilesystemPath cmakeFilePath = path / "CMakeLists.txt";
+    std::ofstream outputFile(cmakeFilePath);
     if (!outputFile.is_open()) {
-        std::cerr << "Unable to open file: " << filePath << std::endl;
+        std::cerr << "Unable to open file: " << cmakeFilePath << std::endl;
         return;
     }
-    outputFile << std::regex_replace(content, pattern, projectName);
+
+    outputFile << fileContent;
     outputFile.close();
 
-    std::filesystem::copy(tempFilePath, path/"CMakeLists.txt");
-
-    if (std::filesystem::remove(tempFilePath)) {
-        std::cout << "Temporary file " << tempFilePath << " has been removed." << std::endl;
-    } else {
-        std::cerr << "Failed to remove temporary file " << tempFilePath << "." << std::endl;
-    }
+    std::cout << "CMakeLists.txt has been created/updated successfully." << std::endl;
 }
 
 void Builder::CreateDirectoryStructure() {
@@ -46,8 +43,10 @@ void Builder::CreateDirectoryStructure() {
     std::filesystem::create_directories(path);
     std::filesystem::create_directories(srcPath);
     std::filesystem::create_directories(includePath);
-
-    std::filesystem::copy(std::filesystem::current_path()/"files/genericMain.txt", srcPath/"main.cpp"); 
+    // TODO: only works if you are in pkg-win folder
+    FilesystemPath genericMainPath = std::filesystem::current_path() / "files" / "genericMain.txt";
+    FilesystemPath mainCppPath = srcPath / "main.cpp";
+    std::filesystem::copy(genericMainPath, mainCppPath); 
 }
 
 void Builder::CreateConanFile() {
