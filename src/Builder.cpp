@@ -1,9 +1,12 @@
 #include <Builder.hpp>
 #include <iostream>
 #include <fstream>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
 
 void Builder::CreateCmakeFile() {
-    std::filesystem::copy(std::filesystem::current_path()/"files/genericCmakeFile.txt",path/"CMakeLists.txt");
+    std::filesystem::copy(std::filesystem::current_path()/"files/genericCmakeFile.txt", path/"CMakeLists.txt");
 }
 
 void Builder::CreateDirectoryStructure() {
@@ -25,6 +28,13 @@ void Builder::CreateConanFile() {
     std::filesystem::copy(std::filesystem::current_path()/"files/genericConanfile.txt",path/"conanfile.py");
 }
 
+void Builder::CreateSeedFile() {
+    json seed {"project_name", projectName};
+    std::cout << seed << std::endl;
+    // std::ofstream seed(path/"seed.json");
+
+}
+
 Builder::Builder(FilesystemPath path, StringView projectName) {
     this->path = path/projectName;
     this->projectName = projectName;
@@ -39,4 +49,5 @@ void Builder::Build() {
     CreateDirectoryStructure();
     CreateCmakeFile();
     CreateConanFile();
+    CreateSeedFile();
 }
