@@ -10,6 +10,7 @@ class Builder {
         void CreateCmakeFile();
         void CreateDirectoryStructure();
         void CreateConanFile();
+        void CreateSeedFile();
     
     public:
         Builder() = default;
