@@ -6,7 +6,7 @@
 class Builder {
     private:
         FilesystemPath path;
-        String projectName;
+        StringView projectName;
         void CreateCmakeFile();
         void CreateDirectoryStructure();
         void CreateConanFile();

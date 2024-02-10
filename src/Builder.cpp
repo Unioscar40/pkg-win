@@ -1,9 +1,35 @@
 #include <Builder.hpp>
 #include <iostream>
 #include <fstream>
+#include <regex>
 
 void Builder::CreateCmakeFile() {
-    std::filesystem::copy(std::filesystem::current_path()/"files/genericCmakeFile.txt",path/"CMakeLists.txt");
+    std::string projectName(this->projectName);
+    std::regex pattern("\\{name\\}");
+    FilesystemPath filePath = std::filesystem::current_path() / "files" / "genericCmakeFile.txt";
+
+    std::ifstream inputFile(filePath);
+    if (!inputFile.is_open()) {
+        std::cerr << "Unable to open file: " << filePath << std::endl;
+        return;
+    }
+    
+    std::string fileContent((std::istreambuf_iterator<char>(inputFile)), std::istreambuf_iterator<char>());
+    inputFile.close();
+    // Replace all "pattern" matches in fileContent with projectName
+    fileContent = std::regex_replace(fileContent, pattern, projectName);
+
+    FilesystemPath cmakeFilePath = path / "CMakeLists.txt";
+    std::ofstream outputFile(cmakeFilePath);
+    if (!outputFile.is_open()) {
+        std::cerr << "Unable to open file: " << cmakeFilePath << std::endl;
+        return;
+    }
+
+    outputFile << fileContent;
+    outputFile.close();
+
+    std::cout << "CMakeLists.txt has been created/updated successfully." << std::endl;
 }
 
 void Builder::CreateDirectoryStructure() {
@@ -17,8 +43,10 @@ void Builder::CreateDirectoryStructure() {
     std::filesystem::create_directories(path);
     std::filesystem::create_directories(srcPath);
     std::filesystem::create_directories(includePath);
-
-    std::filesystem::copy(std::filesystem::current_path()/"files/genericMain.txt", srcPath/"main.cpp"); 
+    // TODO: only works if you are in pkg-win folder
+    FilesystemPath genericMainPath = std::filesystem::current_path() / "files" / "genericMain.txt";
+    FilesystemPath mainCppPath = srcPath / "main.cpp";
+    std::filesystem::copy(genericMainPath, mainCppPath); 
 }
 
 void Builder::CreateConanFile() {
