@@ -29,9 +29,18 @@ void Builder::CreateConanFile() {
 }
 
 void Builder::CreateSeedFile() {
-    json seed {"project_name", projectName};
-    std::cout << seed << std::endl;
-    // std::ofstream seed(path/"seed.json");
+    json jsonSeed {{"project_name", projectName}};
+    std::ofstream seed(path/"seed.json");
+
+    // Comprobar si el archivo se abrió correctamente
+    if (!seed.is_open()) {
+        std::cerr << "Can't open a file." << std::endl;
+        return;
+    }
+
+    // Escribir en el archivo
+    seed << jsonSeed;
+    seed.close();
 
 }
 

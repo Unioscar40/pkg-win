@@ -1,5 +1,6 @@
 from conan import ConanFile
-from conan.tools.cmake import CMake
+
+from os import path
 
 class CompressorRecipe(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
@@ -10,3 +11,7 @@ class CompressorRecipe(ConanFile):
 
     def build_requirements(self):
         self.tool_requires("cmake/3.22.6")
+
+    def layout(self):
+        self.folders.generators = path.join("build","generators")
+        self.folders.build = "build"
